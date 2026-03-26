@@ -40,3 +40,5 @@ This comes after a clear breakdown of the pros and cons of each model. While the
 By choosing a PaaS, you have the flexibility of choosing a platform that is closest to your kenyan customers hence reducing the speed latency. Example of a platform as a service in kenya is [Konza Cloud](https://konza.go.ke/konza-cloud/)
 
 Working with a PaaS will also enable the engineering team to focus on the application and ship features faster.
+
+In the future as the application grows larger and scales, the company can opt towards migrating to IaaS to better handle large traffic spikes and be cost efficient.
