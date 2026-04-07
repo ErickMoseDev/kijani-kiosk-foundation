@@ -1,0 +1,116 @@
+================================================================================
+KijaniKiosk Staging Server — Post-Remediation Verification
+Date: 2026-04-08 01:57:56 EAT
+Verified by: Erick Mong'are
+================================================================================
+
+CHECK 1: Performance — vmstat 2 5
+--------------------------------------------------------------------------------
+procs -----------memory---------- ---swap-- -----io---- -system-- -------cpu-------
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st gu
+ 2  0      0 7314940 176848 3804236    0    0   360   389 2464    3  2  1 97  0  0  0
+ 0  0      0 7328968 176888 3788064    0    0     0   110 3981 12491  5  1 93  0  0  0
+ 0  0      0 7326812 176920 3785608    0    0     0    98 3153 4704  3  1 96  0  0  0
+ 2  0      0 7321724 176920 3787444    0    0     0    10 3045 4699  3  1 95  0  0  0
+ 0  0      0 7328236 176920 3773292    0    0     0     0 4637 6503  5  1 93  0  0  0
+
+Result: PASS — wa=0%, b=0, si/so=0 across all samples
+
+CHECK 2: Disk — df -h / and du
+--------------------------------------------------------------------------------
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  468G   44G  401G  10% /
+
+du -sh /opt/kijanikiosk/shared/logs/
+8.0K    /opt/kijanikiosk/shared/logs/
+
+ls -lhS /opt/kijanikiosk/shared/logs/
+total 0
+-rw-rw----+ 1 kk-logs kk-logs 0 Apr  8 01:54 payments-2024-03-10.log
+-rw-rw----+ 1 kk-logs kk-logs 0 Apr  8 01:54 payments-2024-03-14.log
+-rw-rw----+ 1 kk-logs kk-logs 0 Apr  8 01:54 payments-2024-03-17.log
+
+Result: PASS — 1.6 GB reclaimed (was 45G/11%, now 44G/10%), log dir 8K
+
+CHECK 3: Network — port 3001 state
+--------------------------------------------------------------------------------
+ss -tlnp | grep 3001
+(no output — no listener on port 3001)
+
+Result: PASS — rogue process (PID 14771) is gone, port is free
+
+CHECK 4: Firewall — ufw status numbered
+--------------------------------------------------------------------------------
+Status: active
+
+     To                         Action      From
+     --                         ------      ----
+[ 1] 22/tcp                     ALLOW IN    Anywhere
+[ 2] 80/tcp                     ALLOW IN    Anywhere
+[ 3] 22/tcp (v6)                ALLOW IN    Anywhere (v6)
+[ 4] 80/tcp (v6)                ALLOW IN    Anywhere (v6)
+
+Result: PASS — no DENY rules for 3001/tcp, matches provisioning baseline
+
+CHECK 5: Service health — curl localhost:3001
+--------------------------------------------------------------------------------
+curl -s --max-time 3 http://localhost:3001/
+curl: (7) Failed to connect to localhost port 3001: Connection refused
+
+Result: PASS — no rogue 500 response; connection refused is expected (app not
+         yet deployed, port is clean and available for kk-api)
+
+CHECK 6: Journal — no new errors
+--------------------------------------------------------------------------------
+journalctl -u kk-payments -p err --since "5 minutes ago"
+-- No entries --
+
+journalctl -u kk-api -p err --since "5 minutes ago"
+-- No entries --
+
+Result: PASS — no new errors from either service
+
+CHECK 7: Logrotate config
+--------------------------------------------------------------------------------
+cat /etc/logrotate.d/kijanikiosk
+/opt/kijanikiosk/shared/logs/*.log {
+    su kk-logs kijanikiosk
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0660 kk-logs kijanikiosk
+    sharedscripts
+    postrotate
+        systemctl reload kk-api.service 2>/dev/null || true
+    endscript
+}
+
+Idempotency: sudo logrotate --force /etc/logrotate.d/kijanikiosk → exit 0
+
+Result: PASS — config present, daily rotation, 14-day retention, idempotent
+
+================================================================================
+SUMMARY
+================================================================================
+ [PASS] 1. I/O wait < 10%, no blocked processes, no swap
+ [PASS] 2. Disk space recovered (1.6G → 8K in log dir)
+ [PASS] 3. Port 3001 free of rogue process
+ [PASS] 4. UFW deny rules removed, matches provisioning baseline
+ [PASS] 5. No rogue 500 response on port 3001
+ [PASS] 6. No new journal errors
+ [PASS] 7. Logrotate config present and validated
+
+All 7 checks PASS. Three faults fully remediated.
+
+REMAINING ACTION (not a fault — pre-existing):
+- kk-api.service is in failed state (exhausted StartLimitBurst while rogue held
+  port). After deploying application code to /opt/kijanikiosk/api/server.js:
+    systemctl reset-failed kk-api && systemctl start kk-api
+- nginx.service failed due to apache2 holding port 80 (pre-existing conflict,
+  not part of this incident). Resolve by stopping apache2 and starting nginx:
+    sudo systemctl stop apache2 && sudo systemctl disable apache2
+    sudo systemctl start nginx
+================================================================================
