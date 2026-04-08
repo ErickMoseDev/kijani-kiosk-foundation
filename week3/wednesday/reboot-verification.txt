@@ -1,0 +1,29 @@
+=== systemctl status kk-api.service ===
+× kk-api.service - KijaniKiosk API Service
+     Loaded: loaded (/etc/systemd/system/kk-api.service; enabled; preset: enabled)
+     Active: failed (Result: resources) since Tue 2026-04-07 23:55:49 EAT; 45s ago
+       Docs: https://github.com/kijanikiosk/api
+        CPU: 0
+
+Apr 07 23:55:49 SentientMachine systemd[1]: kk-api.service: Scheduled restart job, restart counter is at 5.
+Apr 07 23:55:49 SentientMachine systemd[1]: kk-api.service: Start request repeated too quickly.
+Apr 07 23:55:49 SentientMachine systemd[1]: kk-api.service: Failed with result 'resources'.
+Apr 07 23:55:49 SentientMachine systemd[1]: Failed to start kk-api.service - KijaniKiosk API Service.
+
+=== apt-mark showhold ===
+nginx
+nodejs
+
+=== ufw status verbose ===
+Status: active
+Logging: on (low)
+Default: deny (incoming), allow (outgoing), deny (routed)
+New profiles: skip
+
+To                         Action      From
+--                         ------      ----
+22/tcp                     ALLOW IN    Anywhere                  
+80/tcp                     ALLOW IN    Anywhere                  
+22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+

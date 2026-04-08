@@ -1,0 +1,93 @@
+[2026-04-07T23:50:31] INFO  Starting KijaniKiosk provisioning...
+[2026-04-07T23:50:31] INFO  === Phase 1: Packages ===
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+gnupg is already the newest version (2.4.4-2ubuntu17.4).
+acl is already the newest version (2.3.2-1build1.1).
+ufw is already the newest version (0.36.2-6).
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+[2026-04-07T23:50:52] INFO  NodeSource GPG key already present
+[2026-04-07T23:50:52] INFO  NodeSource repository already present
+Reading package lists...
+Building dependency tree...
+Reading state information...
+nginx is already the newest version (1.24.0-2ubuntu7.6).
+nodejs is already the newest version (20.20.2-1nodesource1).
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+nginx was already set on hold.
+nodejs was already set on hold.
+[2026-04-07T23:50:53] INFO  nginx version: nginx version: nginx/1.24.0 (Ubuntu)
+[2026-04-07T23:50:53] INFO  node version:  v20.20.2
+[2026-04-07T23:50:53] OK    Phase 1 complete — packages provisioned and held
+[2026-04-07T23:50:53] INFO  === Phase 2: Service Accounts ===
+[2026-04-07T23:50:53] INFO  Already exists group: kijanikiosk
+[2026-04-07T23:50:53] INFO  Already exists: kk-api
+[2026-04-07T23:50:53] INFO  Already exists: kk-payments
+[2026-04-07T23:50:53] INFO  Already exists: kk-logs
+[2026-04-07T23:50:53] INFO  User amina not found — skipping
+[2026-04-07T23:50:53] OK    Phase 2 complete — service accounts provisioned
+[2026-04-07T23:50:53] INFO  === Phase 3: Directories ===
+[2026-04-07T23:50:53] INFO  Directory ready: /opt/kijanikiosk/api (kk-api:kk-api 750)
+[2026-04-07T23:50:53] INFO  Directory ready: /opt/kijanikiosk/payments (kk-payments:kk-payments 750)
+[2026-04-07T23:50:53] INFO  Directory ready: /opt/kijanikiosk/config (root:kijanikiosk 750)
+[2026-04-07T23:50:53] INFO  Directory ready: /opt/kijanikiosk/shared/logs (kk-logs:kk-logs 2770)
+[2026-04-07T23:50:53] INFO  Directory ready: /opt/kijanikiosk/scripts (root:root 750)
+[2026-04-07T23:50:53] INFO  ACLs set on /opt/kijanikiosk/shared/logs (kk-api, kk-payments: rwx + default)
+[2026-04-07T23:50:53] OK    Phase 3 complete — directory tree provisioned
+[2026-04-07T23:50:53] INFO  === Phase 4: systemd Units ===
+[2026-04-07T23:50:53] INFO  Unit file written: /etc/systemd/system/kk-api.service
+[2026-04-07T23:50:54] INFO  systemd daemon reloaded
+Created symlink /etc/systemd/system/multi-user.target.wants/kk-api.service → /etc/systemd/system/kk-api.service.
+[2026-04-07T23:50:54] INFO  kk-api.service enabled (not started)
+[2026-04-07T23:50:54] OK    Phase 4 complete — systemd units provisioned
+[2026-04-07T23:50:54] INFO  === Phase 5: Firewall ===
+Backing up 'user.rules' to '/etc/ufw/user.rules.20260407_235054'
+Backing up 'before.rules' to '/etc/ufw/before.rules.20260407_235054'
+Backing up 'after.rules' to '/etc/ufw/after.rules.20260407_235054'
+Backing up 'user6.rules' to '/etc/ufw/user6.rules.20260407_235054'
+Backing up 'before6.rules' to '/etc/ufw/before6.rules.20260407_235054'
+Backing up 'after6.rules' to '/etc/ufw/after6.rules.20260407_235054'
+
+Default incoming policy changed to 'deny'
+(be sure to update your rules accordingly)
+Default outgoing policy changed to 'allow'
+(be sure to update your rules accordingly)
+Rules updated
+Rules updated (v6)
+[2026-04-07T23:50:54] INFO  Allowed SSH (22/tcp) — safe to enable firewall
+Rules updated
+Rules updated (v6)
+[2026-04-07T23:50:55] INFO  Allowed HTTP (80/tcp)
+Firewall is active and enabled on system startup
+[2026-04-07T23:50:55] INFO  ufw enabled
+[2026-04-07T23:50:55] INFO  Firewall rules:
+[2026-04-07T23:50:55] INFO    Status: active
+[2026-04-07T23:50:55] INFO    Logging: on (low)
+[2026-04-07T23:50:55] INFO    Default: deny (incoming), allow (outgoing), deny (routed)
+[2026-04-07T23:50:55] INFO    New profiles: skip
+[2026-04-07T23:50:55] INFO    
+[2026-04-07T23:50:55] INFO    To                         Action      From
+[2026-04-07T23:50:55] INFO    --                         ------      ----
+[2026-04-07T23:50:55] INFO    22/tcp                     ALLOW IN    Anywhere                  
+[2026-04-07T23:50:55] INFO    80/tcp                     ALLOW IN    Anywhere                  
+[2026-04-07T23:50:55] INFO    22/tcp (v6)                ALLOW IN    Anywhere (v6)             
+[2026-04-07T23:50:56] INFO    80/tcp (v6)                ALLOW IN    Anywhere (v6)             
+[2026-04-07T23:50:56] INFO    
+[2026-04-07T23:50:56] OK    Phase 5 complete — firewall configured
+[2026-04-07T23:50:56] INFO  === Phase 6: Verification ===
+[2026-04-07T23:50:56] OK    Account exists: kk-api
+[2026-04-07T23:50:56] OK    Account exists: kk-payments
+[2026-04-07T23:50:56] OK    Account exists: kk-logs
+[2026-04-07T23:50:56] OK    Directory exists: /opt/kijanikiosk/api
+[2026-04-07T23:50:56] OK    Directory exists: /opt/kijanikiosk/payments
+[2026-04-07T23:50:56] OK    Directory exists: /opt/kijanikiosk/config
+[2026-04-07T23:50:56] OK    Directory exists: /opt/kijanikiosk/shared/logs
+[2026-04-07T23:50:56] OK    Directory exists: /opt/kijanikiosk/scripts
+[2026-04-07T23:50:56] OK    No SUID binaries found under /opt/kijanikiosk
+[2026-04-07T23:50:56] OK    Package held: nginx (1.24.0-2ubuntu7.6)
+[2026-04-07T23:50:56] OK    Package held: nodejs (20.20.2-1nodesource1)
+[2026-04-07T23:50:56] OK    kk-api.service is enabled
+[2026-04-07T23:50:56] OK    All verification checks passed
+[2026-04-07T23:50:56] OK    Provisioning complete. Server is in known state.
