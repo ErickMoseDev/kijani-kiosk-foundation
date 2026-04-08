@@ -1,0 +1,153 @@
+[2026-04-08T02:38:14] INFO  Starting KijaniKiosk provisioning (8 phases)...
+[2026-04-08T02:38:14] INFO  === Phase 1: Packages ===
+Reading package lists...
+Building dependency tree...
+Reading state information...
+curl is already the newest version (8.5.0-2ubuntu10.8).
+gnupg is already the newest version (2.4.4-2ubuntu17.4).
+acl is already the newest version (2.3.2-1build1.1).
+ufw is already the newest version (0.36.2-6).
+sysstat is already the newest version (12.6.1-2).
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+[2026-04-08T02:38:19] INFO  Already exists: NodeSource GPG key
+[2026-04-08T02:38:19] INFO  Already exists: NodeSource repository
+[2026-04-08T02:38:19] INFO  Current versions — nginx: 1.24.0-2ubuntu7.6, node: v20.20.2
+Canceled hold on nginx.
+Canceled hold on nodejs.
+Reading package lists...
+Building dependency tree...
+Reading state information...
+nginx is already the newest version (1.24.0-2ubuntu7.6).
+nodejs is already the newest version (20.20.2-1nodesource1).
+0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+nginx set on hold.
+nodejs set on hold.
+[2026-04-08T02:38:20] INFO  nginx version: nginx version: nginx/1.24.0 (Ubuntu)
+[2026-04-08T02:38:20] INFO  node version:  v20.20.2
+[2026-04-08T02:38:20] OK    Phase 1 complete — packages provisioned and held
+[2026-04-08T02:38:20] INFO  === Phase 2: Service Accounts ===
+[2026-04-08T02:38:20] INFO  Already exists: group kijanikiosk
+[2026-04-08T02:38:20] INFO  Already exists: kk-api
+[2026-04-08T02:38:20] INFO  Already exists: kk-payments
+[2026-04-08T02:38:20] INFO  Already exists: kk-logs
+[2026-04-08T02:38:20] INFO  User amina not found — skipping
+[2026-04-08T02:38:20] OK    Phase 2 complete — service accounts provisioned
+[2026-04-08T02:38:20] INFO  === Phase 3: Directories ===
+[2026-04-08T02:38:20] INFO  Directory ready: /opt/kijanikiosk/api (kk-api:kk-api 750)
+[2026-04-08T02:38:20] INFO  Directory ready: /opt/kijanikiosk/payments (kk-payments:kk-payments 750)
+[2026-04-08T02:38:20] INFO  Directory ready: /opt/kijanikiosk/config (root:kijanikiosk 750)
+[2026-04-08T02:38:20] INFO  Directory ready: /opt/kijanikiosk/shared/logs (kk-logs:kk-logs 2770)
+[2026-04-08T02:38:20] INFO  Directory ready: /opt/kijanikiosk/scripts (root:root 750)
+[2026-04-08T02:38:20] INFO  Directory ready: /opt/kijanikiosk/health (kk-logs:kijanikiosk 750)
+[2026-04-08T02:38:20] INFO  ACLs set on /opt/kijanikiosk/shared/logs (kk-api, kk-payments: rwx + default)
+[2026-04-08T02:38:20] INFO  Already exists: /opt/kijanikiosk/config/kk-api.env
+[2026-04-08T02:38:20] INFO  Already exists: /opt/kijanikiosk/config/kk-payments.env
+[2026-04-08T02:38:20] INFO  Already exists: /opt/kijanikiosk/config/kk-logs.env
+[2026-04-08T02:38:20] INFO  Env files permissions set: root:kijanikiosk 640
+[2026-04-08T02:38:20] OK    Phase 3 complete — directories, ACLs, and config files provisioned
+[2026-04-08T02:38:20] INFO  === Phase 4: systemd Units ===
+[2026-04-08T02:38:20] INFO  Unit file written: kk-api.service
+[2026-04-08T02:38:20] INFO  Unit file written: kk-payments.service
+[2026-04-08T02:38:20] INFO  Unit file written: kk-logs.service
+[2026-04-08T02:38:20] INFO  systemd daemon reloaded
+[2026-04-08T02:38:20] INFO  kk-api.service enabled (not started — no app code deployed)
+[2026-04-08T02:38:21] INFO  kk-payments.service enabled (not started — no app code deployed)
+[2026-04-08T02:38:21] INFO  kk-logs.service enabled (not started — no app code deployed)
+[2026-04-08T02:38:21] OK    Phase 4 complete — three systemd units provisioned
+[2026-04-08T02:38:21] INFO  === Phase 5: Firewall ===
+Backing up 'user.rules' to '/etc/ufw/user.rules.20260408_023822'
+Backing up 'before.rules' to '/etc/ufw/before.rules.20260408_023822'
+Backing up 'after.rules' to '/etc/ufw/after.rules.20260408_023822'
+Backing up 'user6.rules' to '/etc/ufw/user6.rules.20260408_023822'
+Backing up 'before6.rules' to '/etc/ufw/before6.rules.20260408_023822'
+Backing up 'after6.rules' to '/etc/ufw/after6.rules.20260408_023822'
+
+[2026-04-08T02:38:22] INFO  Firewall reset to baseline
+Default incoming policy changed to 'deny'
+(be sure to update your rules accordingly)
+Default outgoing policy changed to 'allow'
+(be sure to update your rules accordingly)
+Rules updated
+Rules updated (v6)
+[2026-04-08T02:38:22] INFO  Allowed: 22/tcp (SSH)
+Rules updated
+Rules updated (v6)
+[2026-04-08T02:38:22] INFO  Allowed: 80/tcp (HTTP)
+Rules updated
+[2026-04-08T02:38:22] INFO  Allowed: 3001/tcp from 10.0.1.0/24 (health check)
+Rules updated
+Rules updated (v6)
+[2026-04-08T02:38:22] INFO  Allowed: 3001/tcp on loopback (nginx proxy)
+Rules updated
+Rules updated (v6)
+[2026-04-08T02:38:23] INFO  Denied: 3001/tcp from external
+Firewall is active and enabled on system startup
+[2026-04-08T02:38:23] INFO  Firewall enabled
+[2026-04-08T02:38:23] INFO    Status: active
+[2026-04-08T02:38:23] INFO    Logging: on (low)
+[2026-04-08T02:38:23] INFO    Default: deny (incoming), allow (outgoing), deny (routed)
+[2026-04-08T02:38:23] INFO    New profiles: skip
+[2026-04-08T02:38:23] INFO    
+[2026-04-08T02:38:23] INFO    To                         Action      From
+[2026-04-08T02:38:23] INFO    --                         ------      ----
+[2026-04-08T02:38:23] INFO    22/tcp                     ALLOW IN    Anywhere                   # Allow SSH remote administration
+[2026-04-08T02:38:23] INFO    80/tcp                     ALLOW IN    Anywhere                   # Allow HTTP via nginx reverse proxy
+[2026-04-08T02:38:23] INFO    3001/tcp                   ALLOW IN    10.0.1.0/24                # Allow kk-payments health check from monitoring subnet
+[2026-04-08T02:38:23] INFO    3001/tcp on lo             ALLOW IN    Anywhere                   # Allow loopback for nginx to kk-payments proxy
+[2026-04-08T02:38:23] INFO    3001/tcp                   DENY IN     Anywhere                   # Deny kk-payments from external — internal only
+[2026-04-08T02:38:23] INFO    22/tcp (v6)                ALLOW IN    Anywhere (v6)              # Allow SSH remote administration
+[2026-04-08T02:38:23] INFO    80/tcp (v6)                ALLOW IN    Anywhere (v6)              # Allow HTTP via nginx reverse proxy
+[2026-04-08T02:38:23] INFO    3001/tcp (v6) on lo        ALLOW IN    Anywhere (v6)              # Allow loopback for nginx to kk-payments proxy
+[2026-04-08T02:38:23] INFO    3001/tcp (v6)              DENY IN     Anywhere (v6)              # Deny kk-payments from external — internal only
+[2026-04-08T02:38:23] INFO    
+[2026-04-08T02:38:23] OK    Phase 5 complete — firewall configured with comments
+[2026-04-08T02:38:23] INFO  === Phase 6: Dirty-State Cleanup ===
+[2026-04-08T02:38:23] INFO  No oversized fake logs found
+[2026-04-08T02:38:23] INFO  apache2 not running — no conflict
+[2026-04-08T02:38:23] INFO  nginx already running
+[2026-04-08T02:38:23] OK    Phase 6 complete — dirty-state cleanup
+[2026-04-08T02:38:23] INFO  === Phase 7: Journal Persistence and Log Rotation ===
+[2026-04-08T02:38:23] INFO  Journal persistence configured: /var/log/journal (max 500MB)
+[2026-04-08T02:38:23] INFO  systemd-journald restarted with persistent storage
+[2026-04-08T02:38:23] INFO  Logrotate config written: /etc/logrotate.d/kijanikiosk
+[2026-04-08T02:38:23] INFO    Rotation: daily | Retention: 14 days | Compression: enabled
+[2026-04-08T02:38:23] OK    Logrotate config validated (debug dry-run passed)
+[2026-04-08T02:38:23] OK    Phase 7 complete — journal persistent, logrotate configured
+[2026-04-08T02:38:23] INFO  === Phase 8: Monitoring Health Checks ===
+[2026-04-08T02:38:23] INFO  Health check results — kk-api: "down", kk-payments: "down", kk-logs: "down"
+[2026-04-08T02:38:23] INFO  Health check JSON: /opt/kijanikiosk/health/last-provision.json
+{"timestamp":"2026-04-08T02:38:23+03:00","kk-api":"down","kk-payments":"down","kk-logs":"down"}
+[2026-04-08T02:38:23] OK    Phase 8 complete — health check written
+[2026-04-08T02:38:23] INFO  === Final Verification ===
+[2026-04-08T02:38:24] OK    PASS: Package held: nginx (1.24.0-2ubuntu7.6)
+[2026-04-08T02:38:24] OK    PASS: Package held: nodejs (20.20.2-1nodesource1)
+[2026-04-08T02:38:24] OK    PASS: Account exists: kk-api
+[2026-04-08T02:38:24] OK    PASS: Account exists: kk-payments
+[2026-04-08T02:38:24] OK    PASS: Account exists: kk-logs
+[2026-04-08T02:38:24] OK    PASS: Directory exists: /opt/kijanikiosk/api
+[2026-04-08T02:38:24] OK    PASS: Directory exists: /opt/kijanikiosk/payments
+[2026-04-08T02:38:24] OK    PASS: Directory exists: /opt/kijanikiosk/config
+[2026-04-08T02:38:24] OK    PASS: Directory exists: /opt/kijanikiosk/shared/logs
+[2026-04-08T02:38:24] OK    PASS: Directory exists: /opt/kijanikiosk/scripts
+[2026-04-08T02:38:24] OK    PASS: Directory exists: /opt/kijanikiosk/health
+[2026-04-08T02:38:24] OK    PASS: kk-api.env readable by kk-api
+[2026-04-08T02:38:24] OK    PASS: kk-payments.env readable by kk-payments
+[2026-04-08T02:38:24] OK    PASS: kk-logs.env readable by kk-logs
+[2026-04-08T02:38:24] OK    PASS: No SUID binaries under /opt/kijanikiosk
+[2026-04-08T02:38:24] OK    PASS: kk-api.service is enabled
+[2026-04-08T02:38:24] OK    PASS: kk-payments.service is enabled
+[2026-04-08T02:38:24] OK    PASS: kk-logs.service is enabled
+[2026-04-08T02:38:24] OK    PASS: Firewall — SSH (22/tcp) allowed
+[2026-04-08T02:38:24] OK    PASS: Firewall — HTTP (80/tcp) allowed
+[2026-04-08T02:38:24] OK    PASS: Firewall — 3001/tcp allowed from 10.0.1.0/24
+[2026-04-08T02:38:24] OK    PASS: Firewall — 3001/tcp external deny present
+[2026-04-08T02:38:24] OK    PASS: Firewall — all rules have comments
+[2026-04-08T02:38:24] OK    PASS: Journal persistence directory exists
+[2026-04-08T02:38:24] OK    PASS: Logrotate config exists
+[2026-04-08T02:38:24] OK    PASS: Logrotate config validates (debug)
+[2026-04-08T02:38:24] OK    PASS: Health check JSON exists
+[2026-04-08T02:38:24] OK    PASS: Health check JSON readable by kk-logs
+[2026-04-08T02:38:24] OK    PASS: kk-api can write to shared/logs after logrotate
+
+[2026-04-08T02:38:24] OK    ALL VERIFICATION CHECKS PASSED
+[2026-04-08T02:38:24] OK    Provisioning complete. Server is in known state.
