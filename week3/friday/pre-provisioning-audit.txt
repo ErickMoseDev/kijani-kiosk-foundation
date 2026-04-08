@@ -1,0 +1,112 @@
+# Pre-Provisioning Audit — Dirty VM State Assessment
+# Run BEFORE executing kijanikiosk-provision.sh
+# Date: Week 3 Friday
+# Purpose: Document the dirty state conditions present on the VM
+# ============================================================================
+
+# --- 1. Package State ---
+# Commands: dpkg -l nginx nodejs, apt-mark showhold
+
+$ dpkg -l nginx nodejs 2>/dev/null | grep -E "^ii"
+# INTERPRETATION: If packages are installed, they may be at unexpected versions.
+# Check whether versions match pinned targets (nginx=1.24.0-2ubuntu7.6, nodejs 20.x).
+# If versions differ, the provisioning script must handle the downgrade/upgrade.
+
+$ apt-mark showhold
+# INTERPRETATION: If nginx/nodejs are already held, the provisioning script's
+# apt-mark unhold → install → hold cycle handles this idempotently.
+# If NOT held, packages may have been upgraded accidentally during the week.
+
+# --- 2. Service Accounts ---
+# Command: getent passwd kk-api kk-payments kk-logs
+
+$ getent passwd kk-api kk-payments kk-logs
+# INTERPRETATION: If any accounts exist, they were created in earlier labs.
+# The provisioning script checks `id <account>` before useradd and logs
+# "Already exists" for each found account. This is expected dirty state.
+
+$ getent group kijanikiosk
+# INTERPRETATION: If the group exists, it was created in Wednesday's or Thursday's lab.
+
+# --- 3. Directory State ---
+# Command: ls -la /opt/kijanikiosk/
+
+$ ls -la /opt/kijanikiosk/ 2>/dev/null
+# INTERPRETATION: Directories may partially exist from earlier provisioning runs.
+# The mkdir -p in the script is idempotent. Ownership/permissions are re-applied
+# regardless of whether the directory is new or existing.
+
+$ du -sh /opt/kijanikiosk/shared/logs/ 2>/dev/null
+# INTERPRETATION: If the log directory contains oversized files (> 100MB),
+# these are fake binary logs from Thursday's incident injection.
+# Phase 6 explicitly detects and removes files > 100MB that are "data" type.
+
+# --- 4. Rogue Processes ---
+# Command: ss -tlnp | grep -E '300[012]'
+
+$ ss -tlnp | grep -E ':300[012]'
+# INTERPRETATION: Any process listening on ports 3000, 3001, or 3002 before
+# provisioning is a rogue process (e.g., /tmp/rogue-server.js from Thursday).
+# Phase 4 kills rogue processes on these ports before writing unit files.
+
+$ ls -la /tmp/rogue-server.* 2>/dev/null
+# INTERPRETATION: Rogue artifacts from Thursday's incident injection.
+# Phase 4 removes /tmp/rogue-server.js and /tmp/rogue-server.log.
+
+# --- 5. Firewall State ---
+# Command: ufw status numbered
+
+$ sudo ufw status numbered
+# INTERPRETATION: Rules may include stale deny entries from Thursday's incident
+# (e.g., DENY 3001/tcp rules), or may reflect the current Wednesday lab state.
+# Phase 5 resets ufw completely (ufw --force reset) before applying the
+# intent-based ruleset, so any dirty firewall state is handled.
+
+# --- 6. systemd Units ---
+# Command: systemctl list-unit-files | grep kk-
+
+$ systemctl list-unit-files | grep kk-
+# INTERPRETATION: If kk-api.service exists and is enabled, it was created in
+# Wednesday's lab. kk-payments and kk-logs may or may not exist yet.
+# Phase 4 overwrites all three unit files unconditionally and runs daemon-reload.
+
+$ systemctl is-failed kk-api kk-payments kk-logs 2>/dev/null
+# INTERPRETATION: Failed units from previous runs are reset via
+# systemctl reset-failed before writing new unit files.
+
+# --- 7. Apache2 / Port 80 Conflict ---
+# Command: systemctl is-active apache2
+
+$ systemctl is-active apache2 2>/dev/null
+# INTERPRETATION: If apache2 is running, it holds port 80 and prevents nginx
+# from starting. Phase 6 stops and disables apache2 before starting nginx.
+
+# --- 8. Logrotate State ---
+# Command: ls -la /etc/logrotate.d/kijanikiosk
+
+$ ls -la /etc/logrotate.d/kijanikiosk 2>/dev/null
+# INTERPRETATION: If the file exists, it was created in Thursday's remediation.
+# Phase 7 overwrites it with the updated config (all three services, correct su directive).
+
+# --- 9. Journal Persistence ---
+# Command: ls -la /var/log/journal/ 2>/dev/null
+
+$ ls -la /var/log/journal/ 2>/dev/null
+# INTERPRETATION: If the directory exists, systemd-journald is already using
+# persistent storage. Phase 7 ensures the config cap is set to 500MB regardless.
+
+# ============================================================================
+# SUMMARY OF EXPECTED DIRTY CONDITIONS:
+# 1. Packages: nginx + nodejs likely installed and held from Wednesday
+# 2. Accounts: kk-api, kk-payments, kk-logs likely exist from Wednesday
+# 3. Directories: /opt/kijanikiosk tree partially exists
+# 4. Oversized fake logs from Thursday incident injection (1.6GB)
+# 5. Possible rogue process on port 3001 from Thursday
+# 6. UFW may have stale deny rules from Thursday incident
+# 7. kk-api.service exists from Wednesday; kk-payments/kk-logs may not
+# 8. apache2 may be running, blocking port 80 for nginx
+# 9. Logrotate config may exist from Thursday
+#
+# The provisioning script handles ALL of these conditions explicitly with
+# logged detection messages. No condition is silently ignored.
+# ============================================================================
