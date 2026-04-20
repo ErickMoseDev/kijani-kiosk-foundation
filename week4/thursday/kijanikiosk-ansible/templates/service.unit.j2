@@ -1,0 +1,48 @@
+[Unit]
+Description=KijaniKiosk {{ service_name }} Service
+After=network.target
+Wants=network.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User={{ service_name }}
+Group={{ service_name }}
+WorkingDirectory={{ base_dir }}/{{ service_name | replace('kk-', '') }}
+EnvironmentFile={{ base_dir }}/config/{{ service_name }}.env
+ExecStart=/usr/bin/node {{ base_dir }}/{{ service_name | replace('kk-', '') }}/server.js
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictNamespaces=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RemoveIPC=true
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+
+ReadWritePaths={{ log_dir }}
+ReadOnlyPaths={{ base_dir }}/config
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier={{ service_name }}
+
+[Install]
+WantedBy=multi-user.target

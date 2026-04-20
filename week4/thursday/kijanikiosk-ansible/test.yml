@@ -1,0 +1,18 @@
+- name: Configure KijaniKiosk servers
+  hosts: kijanikiosk # Target: all servers in the kijanikiosk group
+  become: true # Escalate to sudo for tasks that need it
+  become_method: sudo
+
+  tasks:
+      - name: Update apt cache
+        ansible.builtin.apt:
+            update_cache: true
+            cache_valid_time: 3600 # Skip if cache is less than 1 hour old
+
+      - name: Install required packages
+        ansible.builtin.apt:
+            name:
+                - nginx
+                - htop
+                - sysstat
+            state: present
