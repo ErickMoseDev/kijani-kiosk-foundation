@@ -1,0 +1,111 @@
+
+PLAY [Configure KijaniKiosk servers] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Update apt cache] ********************************************************
+ok: [payments-staging]
+ok: [api-staging]
+changed: [logs-staging]
+
+TASK [Install required packages] ***********************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Create kijanikiosk system group] *****************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Create service account] **************************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Create application directory tree] ***************************************
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0755'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0755'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0755'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-payments', 'group': 'kijanikiosk', 'mode': '2770'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-api', 'group': 'kijanikiosk', 'mode': '2770'})
+ok: [payments-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0750'})
+ok: [api-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-payments', 'group': 'kijanikiosk', 'mode': '0750'})
+ok: [logs-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-api', 'group': 'kijanikiosk', 'mode': '0750'})
+
+TASK [Deploy systemd unit file] ************************************************
+ok: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+TASK [Flush handlers to reload systemd] ****************************************
+
+TASK [Flush handlers to reload systemd] ****************************************
+
+TASK [Flush handlers to reload systemd] ****************************************
+
+RUNNING HANDLER [Reload systemd] ***********************************************
+ok: [payments-staging]
+ok: [api-staging]
+
+RUNNING HANDLER [Restart service] **********************************************
+skipping: [api-staging]
+skipping: [payments-staging]
+
+TASK [Enable service] **********************************************************
+changed: [api-staging]
+ok: [logs-staging]
+changed: [payments-staging]
+
+TASK [Set ufw default deny incoming] *******************************************
+ok: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Allow SSH] ***************************************************************
+ok: [logs-staging]
+changed: [api-staging]
+changed: [payments-staging]
+
+TASK [Allow HTTP] **************************************************************
+changed: [api-staging]
+ok: [logs-staging]
+changed: [payments-staging]
+
+TASK [Allow service port on loopback] ******************************************
+changed: [api-staging]
+ok: [logs-staging]
+changed: [payments-staging]
+
+TASK [Create persistent journal directory] *************************************
+changed: [payments-staging]
+changed: [api-staging]
+ok: [logs-staging]
+
+TASK [Deploy logrotate configuration] ******************************************
+ok: [logs-staging]
+changed: [payments-staging]
+changed: [api-staging]
+
+RUNNING HANDLER [Restart journald] *********************************************
+changed: [payments-staging]
+changed: [api-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=16   changed=10   unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+logs-staging               : ok=14   changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+payments-staging           : ok=16   changed=10   unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
+

@@ -1,0 +1,115 @@
+
+PLAY [Configure KijaniKiosk servers] *******************************************
+
+TASK [Gathering Facts] *********************************************************
+[WARNING]: Host 'payments-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'logs-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+[WARNING]: Host 'api-staging' is using the discovered Python interpreter at '/usr/bin/python3.12', but future installation of another Python interpreter could cause a different interpreter to be discovered. See https://docs.ansible.com/ansible-core/2.20/reference_appendices/interpreter_discovery.html for more information.
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Update apt cache] ********************************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Install required packages] ***********************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+TASK [Create kijanikiosk system group] *****************************************
+ok: [payments-staging]
+ok: [logs-staging]
+ok: [api-staging]
+
+TASK [Create service account] **************************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+TASK [Create application directory tree] ***************************************
+[WARNING]: failed to look up user kk-logs. Create user up to this point in real play
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0755'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0755'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0755'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/config', 'owner': 'root', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/shared/logs', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '2770'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/scripts', 'owner': 'root', 'group': 'root', 'mode': '0750'})
+changed: [api-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [payments-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+changed: [logs-staging] => (item={'path': '/opt/kijanikiosk/health', 'owner': 'kk-logs', 'group': 'kijanikiosk', 'mode': '0750'})
+
+TASK [Deploy systemd unit file] ************************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Flush handlers to reload systemd] ****************************************
+
+TASK [Flush handlers to reload systemd] ****************************************
+
+TASK [Flush handlers to reload systemd] ****************************************
+
+RUNNING HANDLER [Reload systemd] ***********************************************
+ok: [api-staging]
+ok: [payments-staging]
+ok: [logs-staging]
+
+RUNNING HANDLER [Restart service] **********************************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+TASK [Enable service] **********************************************************
+skipping: [api-staging]
+skipping: [payments-staging]
+skipping: [logs-staging]
+
+TASK [Set ufw default deny incoming] *******************************************
+changed: [payments-staging]
+changed: [logs-staging]
+changed: [api-staging]
+
+TASK [Allow SSH] ***************************************************************
+changed: [payments-staging]
+changed: [api-staging]
+changed: [logs-staging]
+
+TASK [Allow HTTP] **************************************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+TASK [Allow service port on loopback] ******************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+TASK [Create persistent journal directory] *************************************
+changed: [api-staging]
+changed: [logs-staging]
+changed: [payments-staging]
+
+TASK [Deploy logrotate configuration] ******************************************
+changed: [api-staging]
+changed: [payments-staging]
+changed: [logs-staging]
+
+RUNNING HANDLER [Restart journald] *********************************************
+changed: [api-staging]
+changed: [logs-staging]
+changed: [payments-staging]
+
+PLAY RECAP *********************************************************************
+api-staging                : ok=15   changed=10   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+logs-staging               : ok=15   changed=10   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+payments-staging           : ok=15   changed=10   unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+
