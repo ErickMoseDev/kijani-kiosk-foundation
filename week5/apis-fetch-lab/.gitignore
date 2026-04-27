@@ -34,7 +34,7 @@ jspm_packages/
 .DS_Store
 
 # Package lockfiles
-package-lock.json
+# package-lock.json
 yarn.lock
 /dist
 /build
