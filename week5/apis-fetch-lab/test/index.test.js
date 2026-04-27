@@ -2,174 +2,207 @@
  * @jest-environment jsdom
  */
 
-const fs = require('fs')
-const path = require('path')
-require('@testing-library/jest-dom')
+const fs = require('fs');
+const path = require('path');
+require('@testing-library/jest-dom');
 
 describe('Weather Alerts App - Input clearing', () => {
-  let container
-  let fetchMock
+	let container;
+	let fetchMock;
 
-  beforeEach(() => {
-    fetchMock = jest.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({ title: "Weather Alerts", features: [] })
-    })
-    global.fetch = fetchMock
-    
-    const html = fs.readFileSync(path.resolve(__dirname, '../index.html'), 'utf8')
-    document.documentElement.innerHTML = html
-    container = document.body
+	beforeEach(() => {
+		fetchMock = jest.fn().mockResolvedValue({
+			ok: true,
+			status: 200,
+			json: async () => ({ title: 'Weather Alerts', features: [] }),
+		});
+		global.fetch = fetchMock;
 
-    jest.resetModules()
-    require('../index.js')
-    document.dispatchEvent(new Event('DOMContentLoaded'))
-  })
+		const html = fs.readFileSync(
+			path.resolve(__dirname, '../index.html'),
+			'utf8',
+		);
+		document.documentElement.innerHTML = html;
+		container = document.body;
 
-  it('calls fetch with the correct state in the URL', async () => {
-    const { getByPlaceholderText, getByText } = require('@testing-library/dom').within(container)
+		jest.resetModules();
+		require('../index.js');
+		document.dispatchEvent(new Event('DOMContentLoaded'));
+	});
 
-    const input = getByPlaceholderText('Enter state abbreviation')
-    const button = getByText('Get Weather Alerts')
+	it('calls fetch with the correct state in the URL', async () => {
+		const { getByPlaceholderText, getByText } =
+			require('@testing-library/dom').within(container);
 
-    input.value = 'CA'
-    button.click()
+		const input = getByPlaceholderText('Enter state abbreviation');
+		const button = getByText('Get Weather Alerts');
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+		input.value = 'CA';
+		button.click();
 
-    expect(fetchMock).toHaveBeenCalledTimes(1)
-    expect(fetchMock).toHaveBeenCalledWith('https://api.weather.gov/alerts/active?area=CA')
-  })
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
-  it('displays fetched alert data in the DOM after a successful fetch', async () => {
-    const { getByPlaceholderText, getByText } = require('@testing-library/dom').within(container)
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		expect(fetchMock).toHaveBeenCalledWith(
+			'https://api.weather.gov/alerts/active?area=CA',
+		);
+	});
 
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        title: "Weather Alerts",
-        features: [
-          { properties: { headline: "Flood warning in your area" }},
-          { properties: { headline: "Tornado watch for the region" }}
-        ]
-      })
-    })
+	it('displays fetched alert data in the DOM after a successful fetch', async () => {
+		const { getByPlaceholderText, getByText } =
+			require('@testing-library/dom').within(container);
 
-    const input = getByPlaceholderText('Enter state abbreviation')
-    const button = getByText('Get Weather Alerts')
+		fetchMock.mockResolvedValue({
+			ok: true,
+			status: 200,
+			json: async () => ({
+				title: 'Weather Alerts',
+				features: [
+					{ properties: { headline: 'Flood warning in your area' } },
+					{
+						properties: {
+							headline: 'Tornado watch for the region',
+						},
+					},
+				],
+			}),
+		});
 
-    input.value = 'NY'
-    button.click()
+		const input = getByPlaceholderText('Enter state abbreviation');
+		const button = getByText('Get Weather Alerts');
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+		input.value = 'NY';
+		button.click();
 
-    const displayDiv = container.querySelector('#alerts-display')
-    expect(displayDiv).toHaveTextContent('Weather Alerts: 2')
-    expect(displayDiv).toHaveTextContent('Flood warning in your area')
-    expect(displayDiv).toHaveTextContent('Tornado watch for the region')
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        title: "Weather Alerts",
-        features: [
-          { properties: { headline: "Flood warning in your area" }},
-          { properties: { headline: "Air quality alert in your area" }},
-          { properties: { headline: "Severe thunderstorm warning in your area" }},
-          { properties: { headline: "Tornado watch for the region" }}
-        ]
-      })
-    })
+		const displayDiv = container.querySelector('#alerts-display');
+		expect(displayDiv).toHaveTextContent('Weather Alerts: 2');
+		expect(displayDiv).toHaveTextContent('Flood warning in your area');
+		expect(displayDiv).toHaveTextContent('Tornado watch for the region');
 
-    input.value = 'MN'
-    button.click()
+		fetchMock.mockResolvedValue({
+			ok: true,
+			status: 200,
+			json: async () => ({
+				title: 'Weather Alerts',
+				features: [
+					{ properties: { headline: 'Flood warning in your area' } },
+					{
+						properties: {
+							headline: 'Air quality alert in your area',
+						},
+					},
+					{
+						properties: {
+							headline:
+								'Severe thunderstorm warning in your area',
+						},
+					},
+					{
+						properties: {
+							headline: 'Tornado watch for the region',
+						},
+					},
+				],
+			}),
+		});
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+		input.value = 'MN';
+		button.click();
 
-    expect(displayDiv).toHaveTextContent('Weather Alerts: 4')
-    expect(displayDiv).toHaveTextContent('Flood warning in your area')
-    expect(displayDiv).toHaveTextContent('Air quality alert in your area')
-    expect(displayDiv).toHaveTextContent('Severe thunderstorm warning in your area')
-    expect(displayDiv).toHaveTextContent('Tornado watch for the region')
-  })
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
-  it('clears the input field after clicking fetch', async () => {
-    const { getByPlaceholderText, getByText } = require('@testing-library/dom').within(container)
+		expect(displayDiv).toHaveTextContent('Weather Alerts: 4');
+		expect(displayDiv).toHaveTextContent('Flood warning in your area');
+		expect(displayDiv).toHaveTextContent('Air quality alert in your area');
+		expect(displayDiv).toHaveTextContent(
+			'Severe thunderstorm warning in your area',
+		);
+		expect(displayDiv).toHaveTextContent('Tornado watch for the region');
+	});
 
-    const input = getByPlaceholderText('Enter state abbreviation')
-    const button = getByText('Get Weather Alerts')
+	it('clears the input field after clicking fetch', async () => {
+		const { getByPlaceholderText, getByText } =
+			require('@testing-library/dom').within(container);
 
-    input.value = 'TX'
-    button.click()
+		const input = getByPlaceholderText('Enter state abbreviation');
+		const button = getByText('Get Weather Alerts');
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+		input.value = 'TX';
+		button.click();
 
-    expect(input.value).toBe('')
-  })
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
-  it('displays an error message when fetch fails', async () => {
-    const { getByPlaceholderText, getByText } = require('@testing-library/dom').within(container)
-    fetchMock.mockRejectedValue(new Error('Network failure'))
+		expect(input.value).toBe('');
+	});
 
-    const input = getByPlaceholderText('Enter state abbreviation')
-    const button = getByText('Get Weather Alerts')
+	it('displays an error message when fetch fails', async () => {
+		const { getByPlaceholderText, getByText } =
+			require('@testing-library/dom').within(container);
+		fetchMock.mockRejectedValue(new Error('Network failure'));
 
-    input.value = 'ZZ'
-    button.click()
+		const input = getByPlaceholderText('Enter state abbreviation');
+		const button = getByText('Get Weather Alerts');
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+		input.value = 'ZZ';
+		button.click();
 
-    const errorDiv = container.querySelector('#error-message')
-    expect(errorDiv).not.toHaveClass('hidden')
-    expect(errorDiv).toHaveTextContent(/network failure/i)
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
-    fetchMock.mockRejectedValue(new Error('Other issue'))
+		const errorDiv = container.querySelector('#error-message');
+		expect(errorDiv).not.toHaveClass('hidden');
+		expect(errorDiv).toHaveTextContent(/network failure/i);
 
-    input.value = 'ZZ'
-    button.click()
+		fetchMock.mockRejectedValue(new Error('Other issue'));
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+		input.value = 'ZZ';
+		button.click();
 
-    expect(errorDiv).not.toHaveClass('hidden')
-    expect(errorDiv).toHaveTextContent(/other issue/i)
-  })
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
-  it('clears the error message after a successful fetch', async () => {
-    const { getByPlaceholderText, getByText } = require('@testing-library/dom').within(container)
+		expect(errorDiv).not.toHaveClass('hidden');
+		expect(errorDiv).toHaveTextContent(/other issue/i);
+	});
 
-    fetchMock.mockRejectedValue(new Error('Network issue'))
+	it('clears the error message after a successful fetch', async () => {
+		const { getByPlaceholderText, getByText } =
+			require('@testing-library/dom').within(container);
 
-    const input = getByPlaceholderText('Enter state abbreviation')
-    const button = getByText('Get Weather Alerts')
+		fetchMock.mockRejectedValue(new Error('Network issue'));
 
-    input.value = 'ZZ'
-    button.click()
+		const input = getByPlaceholderText('Enter state abbreviation');
+		const button = getByText('Get Weather Alerts');
 
-    await new Promise(resolve => setTimeout(resolve, 0))
+		input.value = 'ZZ';
+		button.click();
 
-    const errorDiv = container.querySelector('#error-message')
-    expect(errorDiv).not.toHaveClass('hidden')
-    expect(errorDiv).toHaveTextContent(/network issue/i)
+		await new Promise((resolve) => setTimeout(resolve, 0));
 
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        title: "Weather Alerts",
-        features: [
-          { properties: { headline: "Heat advisory in your area" } }
-        ]
-      })
-    })
+		const errorDiv = container.querySelector('#error-message');
+		expect(errorDiv).not.toHaveClass('hidden');
+		expect(errorDiv).toHaveTextContent(/network issue/i);
 
-    input.value = 'FL'
-    button.click()
+		fetchMock.mockResolvedValue({
+			ok: true,
+			status: 200,
+			json: async () => ({
+				title: 'Weather Alerts',
+				features: [
+					{ properties: { headline: 'Heat advisory in your area' } },
+				],
+			}),
+		});
 
-    await new Promise(resolve => setTimeout(resolve, 0))
-    expect(errorDiv.textContent).toBe('')
-    expect(errorDiv).toHaveClass('hidden')
-  })
-})
+		input.value = 'FL';
+		button.click();
+
+		await new Promise((resolve) => setTimeout(resolve, 0));
+		expect(errorDiv.textContent).toBe('');
+		expect(errorDiv).toHaveClass('hidden');
+	});
+});
+
+test('deliberate failure - CI pipeline proof', () => {
+	expect(1 + 1).toBe(3); // This will always fail
+});
