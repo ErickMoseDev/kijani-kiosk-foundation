@@ -1,0 +1,81 @@
+pipeline {
+    agent any
+    tools{
+        nodejs "node24"
+    }
+    environment {
+        NODE_ENV = "test"
+        BUILD_DIR = "dist"
+        APP_NAME = "apis-and-fetch"
+    }
+    options{
+        timeout(time: 15, unit: "MINUTES")
+        buildDiscarder(logRotator(numToKeepStr: "10"))
+        disableConcurrentBuilds()
+    }
+    stages {
+        stage("Setup") {
+            steps {
+                script {
+                    if (fileExists("package.json")) {
+                        env.APP_DIR = "."
+                    } else if (fileExists("week5/apis-fetch-lab/package.json")) {
+                        env.APP_DIR = "week5/apis-fetch-lab"
+                    } else {
+                        error "package.json not found in workspace root or week5/apis-fetch-lab"
+                    }
+                    echo "App directory: ${env.APP_DIR}"
+                }
+            }
+        }
+        stage("Build"){
+            steps {
+                dir(env.APP_DIR) {
+                    echo "Installing dependencies for ${APP_NAME}..."
+                    sh 'npm ci'
+                    echo "Building application..."
+                    sh 'npm run build'
+                    echo "Verifying build output"
+                    sh '''
+                    set -e
+                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
+                    echo "Build output: $(ls ${BUILD_DIR} | wc -l) files in ${BUILD_DIR}/ "
+                    '''
+                }
+            }
+        }
+        stage("Test"){
+            steps {
+                dir(env.APP_DIR) {
+                    echo "Running test suites for ${APP_NAME}"
+                    sh 'npm test'
+                }
+            }
+        }
+        stage("Archive"){
+            steps {
+                dir(env.APP_DIR) {
+                    echo "Archiving build artifact for ${APP_NAME} build ${BUILD_NUMBER}..."
+                    archiveArtifacts artifacts: "${BUILD_DIR}/**",
+                                    fingerprint: true,
+                                    onlyIfSuccessful: true
+                    echo "Artifact archived. Download from ${BUILD_URL}artifact/"
+                }
+            }
+        }
+    }
+    post {
+        success {
+            echo "Pipeline succeded. ${APP_NAME} build ${BUILD_NUMBER}"
+        }
+        failure {
+            echo "Pipeline FAILED: ${APP_NAME} build ${BUILD_NUMBER} - check logs"
+        }
+        always {
+            echo "Build URL: ${BUILD_URL}"
+            junit allowEmptyResults: true,
+                testResults: 'test-results/*.xml'
+            cleanWs()
+        }
+    }
+}
