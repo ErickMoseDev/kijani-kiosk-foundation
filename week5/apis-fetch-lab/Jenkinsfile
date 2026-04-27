@@ -30,7 +30,7 @@ pipeline {
                 cd "$APP_DIR"
                 echo "Using app directory: $PWD"
                 echo "Installing dependencies for ${APP_NAME}..."
-                npm install
+                npm ci
                 echo "Building application..."
                 npm run build
                 echo "Verifying build output"
@@ -41,7 +41,12 @@ pipeline {
         }
         stage("Test"){
             steps {
-                echo "Test stage: TODO"
+                echo "Running test suites for ${APP_NAME}"
+                sh '''
+                    set -e
+                    npm test
+                '''
+
             }
         }
         stage("Archive"){
@@ -59,6 +64,8 @@ pipeline {
         }
         always {
             echo "Build URL: ${BUILD_URL}"
+            junit allowEmptyResults: true,
+                testResults: 'test-results/*.xml'
             cleanWs()
         }
     }
