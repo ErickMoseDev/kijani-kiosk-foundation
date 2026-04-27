@@ -17,7 +17,7 @@ pipeline {
         stage("Build"){
             steps {
                 echo "Installing dependencies for ${APP_NAME}..."
-                sh "npm ci"
+                sh "npm install"
                 echo "Building application..."
                 sh 'npm run build'
                 echo "Verifying build output"
