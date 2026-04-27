@@ -204,5 +204,5 @@ describe('Weather Alerts App - Input clearing', () => {
 });
 
 test('deliberate failure - CI pipeline proof', () => {
-	expect(1 + 1).toBe(3); // This will always fail
+	expect(1 + 1).toBe(3); // This will always fail - ci
 });
