@@ -14,39 +14,42 @@ pipeline {
         disableConcurrentBuilds()
     }
     stages {
+        stage("Setup") {
+            steps {
+                script {
+                    if (fileExists("package.json")) {
+                        env.APP_DIR = "."
+                    } else if (fileExists("week5/apis-fetch-lab/package.json")) {
+                        env.APP_DIR = "week5/apis-fetch-lab"
+                    } else {
+                        error "package.json not found in workspace root or week5/apis-fetch-lab"
+                    }
+                    echo "App directory: ${env.APP_DIR}"
+                }
+            }
+        }
         stage("Build"){
             steps {
-                sh '''
-                set -e
-                if [ -f "package.json" ]; then
-                    APP_DIR="."
-                elif [ -f "week5/apis-fetch-lab/package.json" ]; then
-                    APP_DIR="week5/apis-fetch-lab"
-                else
-                    echo "ERROR: package.json not found in workspace root or week5/apis-fetch-lab"
-                    exit 1
-                fi
-
-                cd "$APP_DIR"
-                echo "Using app directory: $PWD"
-                echo "Installing dependencies for ${APP_NAME}..."
-                npm ci
-                echo "Building application..."
-                npm run build
-                echo "Verifying build output"
-                test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
-                echo "Build output: $(ls ${BUILD_DIR} | wc -l) files in ${BUILD_DIR}/ "
-                '''
+                dir(env.APP_DIR) {
+                    echo "Installing dependencies for ${APP_NAME}..."
+                    sh 'npm ci'
+                    echo "Building application..."
+                    sh 'npm run build'
+                    echo "Verifying build output"
+                    sh '''
+                    set -e
+                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
+                    echo "Build output: $(ls ${BUILD_DIR} | wc -l) files in ${BUILD_DIR}/ "
+                    '''
+                }
             }
         }
         stage("Test"){
             steps {
-                echo "Running test suites for ${APP_NAME}"
-                sh '''
-                    set -e
-                    npm test
-                '''
-
+                dir(env.APP_DIR) {
+                    echo "Running test suites for ${APP_NAME}"
+                    sh 'npm test'
+                }
             }
         }
         stage("Archive"){
