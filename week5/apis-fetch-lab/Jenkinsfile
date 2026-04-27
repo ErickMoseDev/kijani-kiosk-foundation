@@ -7,12 +7,6 @@ pipeline {
         NODE_ENV = "test"
         BUILD_DIR = "dist"
         APP_NAME = "apis-and-fetch"
-        PKG_VERSION = sh(script:"node -p \"require('week5/apis-fetch-lab/package.json').version\"",
-                        returnStdout: true).trim()
-        GIT_SHORT = sh(script: 'git rev-parse --short HEAD',
-                    returnStdout: true).trim()
-        ARTIFACT_VERSION = "${PKG_VERSION}-${GIT_SHORT}"
-        // Artifact version: 1.0.0-821f073
     }
     options{
         timeout(time: 15, unit: "MINUTES")
@@ -31,6 +25,11 @@ pipeline {
                         error "package.json not found in workspace root or week5/apis-fetch-lab"
                     }
                     echo "App directory: ${env.APP_DIR}"
+
+                    env.PKG_VERSION = sh(script: "node -p \"require('./${env.APP_DIR}/package.json').version\"", returnStdout: true).trim()
+                    env.GIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
+                    echo "Artifact version: ${env.ARTIFACT_VERSION}"
                 }
             }
         }
@@ -66,7 +65,7 @@ pipeline {
                                     fingerprint: true,
                                     onlyIfSuccessful: true
                     echo "Artifact archived. Download from ${BUILD_URL}artifact/"
-                    echo "${ARTIFACT_VERSION}"
+                   
                 }
             }
         }
