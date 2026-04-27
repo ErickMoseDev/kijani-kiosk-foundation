@@ -16,13 +16,24 @@ pipeline {
     stages {
         stage("Build"){
             steps {
-                echo "Installing dependencies for ${APP_NAME}..."
-                sh "npm install"
-                echo "Building application..."
-                sh 'npm run build'
-                echo "Verifying build output"
                 sh '''
                 set -e
+                if [ -f "package.json" ]; then
+                    APP_DIR="."
+                elif [ -f "week5/apis-fetch-lab/package.json" ]; then
+                    APP_DIR="week5/apis-fetch-lab"
+                else
+                    echo "ERROR: package.json not found in workspace root or week5/apis-fetch-lab"
+                    exit 1
+                fi
+
+                cd "$APP_DIR"
+                echo "Using app directory: $PWD"
+                echo "Installing dependencies for ${APP_NAME}..."
+                npm install
+                echo "Building application..."
+                npm run build
+                echo "Verifying build output"
                 test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
                 echo "Build output: $(ls ${BUILD_DIR} | wc -l) files in ${BUILD_DIR}/ "
                 '''
