@@ -69,7 +69,7 @@ pipeline {
                     set -e
 
                     # Generate base64 password
-                    NEXUS_TOKEN = $(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
+                    NEXUS_TOKEN=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
 
                     # create npmrc with token
                     cat > .npmrc << NPMRC
