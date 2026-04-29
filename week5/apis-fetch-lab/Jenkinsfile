@@ -1,28 +1,28 @@
 pipeline {
     agent any
-    tools{
-        nodejs "node24"
+    tools {
+        nodejs 'node24'
     }
     environment {
-        NODE_ENV = "test"
-        BUILD_DIR = "dist"
-        APP_NAME = "apis-and-fetch"
+        NODE_ENV = 'test'
+        BUILD_DIR = 'dist'
+        APP_NAME = 'apis-and-fetch'
     }
-    options{
-        timeout(time: 15, unit: "MINUTES")
-        buildDiscarder(logRotator(numToKeepStr: "10"))
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
         disableConcurrentBuilds()
     }
     stages {
-        stage("Setup") {
+        stage('Setup') {
             steps {
                 script {
-                    if (fileExists("package.json")) {
-                        env.APP_DIR = "."
-                    } else if (fileExists("week5/apis-fetch-lab/package.json")) {
-                        env.APP_DIR = "week5/apis-fetch-lab"
+                    if (fileExists('package.json')) {
+                        env.APP_DIR = '.'
+                    } else if (fileExists('week5/apis-fetch-lab/package.json')) {
+                        env.APP_DIR = 'week5/apis-fetch-lab'
                     } else {
-                        error "package.json not found in workspace root or week5/apis-fetch-lab"
+                        error 'package.json not found in workspace root or week5/apis-fetch-lab'
                     }
                     echo "App directory: ${env.APP_DIR}"
 
@@ -33,14 +33,14 @@ pipeline {
                 }
             }
         }
-        stage("Build"){
+        stage('Build') {
             steps {
                 dir(env.APP_DIR) {
                     echo "Installing dependencies for ${APP_NAME}..."
                     sh 'npm ci'
-                    echo "Building application..."
+                    echo 'Building application...'
                     sh 'npm run build'
-                    echo "Verifying build output"
+                    echo 'Verifying build output'
                     sh '''
                     set -e
                     test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
@@ -49,7 +49,7 @@ pipeline {
                 }
             }
         }
-        stage("Test"){
+        stage('Test') {
             steps {
                 dir(env.APP_DIR) {
                     echo "Running test suites for ${APP_NAME}"
@@ -57,7 +57,41 @@ pipeline {
                 }
             }
         }
-        stage("Archive"){
+        stage('Publish') {
+            steps {
+                dir(env.APP_DIR) {
+                    withCredentials([usernamePassword(
+                    credentialsId:'nexus-credentials',
+                    usernameVariable: 'NEXUS_USER',
+                    passwordVariable: 'NEXUS_PASS'
+                )]) {
+                        sh '''
+                    set -e
+
+                    # Generate base64 password
+                    NEXUS_TOKEN = $(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
+
+                    # create npmrc with token
+                    cat > .npmrc << NPMRC
+                    registry = http://localhost:8081/repository/npm-kijanikiosk/
+                    //localhost:8081/repository/npm-kijanikiosk/:_auth=${NEXUS_TOKEN}
+                    NPMRC
+
+                    # Update package.json version to ARTIFACT_VERSION
+                    npm version "${ARTIFACT_VERSION}" --no-git-tag-version
+
+                    # Publish Package
+                    npm publish
+
+                    # clean up .npmrc with credentials
+                    rm -f .npmrc
+                    '''
+                }
+                }
+            }
+        }
+
+        stage('Archive') {
             steps {
                 dir(env.APP_DIR) {
                     echo "Archiving build artifact for ${APP_NAME} build ${BUILD_NUMBER}..."
@@ -65,7 +99,6 @@ pipeline {
                                     fingerprint: true,
                                     onlyIfSuccessful: true
                     echo "Artifact archived. Download from ${BUILD_URL}artifact/"
-                   
                 }
             }
         }
