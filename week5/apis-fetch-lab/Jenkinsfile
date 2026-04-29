@@ -87,14 +87,13 @@ NEXUS_TOKEN=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
 cat > .npmrc << NPMRC
 registry=http://localhost:8081/repository/npm-kijanikiosk/
 //localhost:8081/repository/npm-kijanikiosk/:_auth=${NEXUS_TOKEN}
-//localhost:8081/repository/npm-kijanikiosk/:always-auth=true
 NPMRC
 
 # Update package.json version to ARTIFACT_VERSION
 npm version "${ARTIFACT_VERSION}" --no-git-tag-version
 
 # Publish Package
-npm publish
+npm publish --tag build
 
 # Clean up .npmrc with credentials
 rm -f .npmrc
