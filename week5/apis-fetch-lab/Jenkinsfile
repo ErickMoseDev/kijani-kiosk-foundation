@@ -85,7 +85,7 @@ pipeline {
 
                     # create npmrc with token
                     cat > .npmrc << NPMRC
-                    registry = http://localhost:8081/repository/npm-kijanikiosk/
+                    registry=http://localhost:8081/repository/npm-kijanikiosk/
                     //localhost:8081/repository/npm-kijanikiosk/:_auth=${NEXUS_TOKEN}
                     NPMRC
 
