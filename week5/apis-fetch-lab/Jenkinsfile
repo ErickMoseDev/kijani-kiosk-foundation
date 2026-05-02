@@ -7,6 +7,7 @@ pipeline {
         NODE_ENV = 'test'
         BUILD_DIR = 'dist'
         APP_NAME = 'apis-and-fetch'
+        NEXUS_URL = 'http://nexus:8081'
     }
     options {
         timeout(time: 15, unit: 'MINUTES')
@@ -85,8 +86,8 @@ NEXUS_TOKEN=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
 
 # Create .npmrc with credentials
 cat > .npmrc << NPMRC
-registry=http://localhost:8081/repository/npm-kijanikiosk/
-//localhost:8081/repository/npm-kijanikiosk/:_auth=${NEXUS_TOKEN}
+registry=${NEXUS_URL}/repository/npm-kijanikiosk/
+//nexus:8081/repository/npm-kijanikiosk/:_auth=${NEXUS_TOKEN}
 NPMRC
 
 # Update package.json version to ARTIFACT_VERSION
