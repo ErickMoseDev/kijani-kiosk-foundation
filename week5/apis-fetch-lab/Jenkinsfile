@@ -5,9 +5,9 @@ pipeline {
             args  '-v /tmp:/tmp'
         }
     }
-    tools {
-        nodejs 'node24'
-    }
+    // tools {
+    //     nodejs 'node24'
+    // }
     environment {
         NODE_ENV = 'test'
         BUILD_DIR = 'dist'
