@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'node:24-alpine'
-            args  '-v /tmp:/tmp'
+            image 'node:24'
+            args  '--network shared-net'
         }
     }
     // tools {
