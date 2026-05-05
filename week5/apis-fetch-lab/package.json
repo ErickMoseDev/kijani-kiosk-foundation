@@ -17,6 +17,7 @@
 	},
 	"scripts": {
 		"build": "mkdir -p dist && cp index.html styles.css index.js dist/",
+		"lint": "eslint .",
 		"test": "jest"
 	},
 	"keywords": [],
