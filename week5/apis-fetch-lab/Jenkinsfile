@@ -94,7 +94,7 @@ pipeline {
                     steps {
                         dir(env.APP_DIR) {
                             echo 'Running dependency security audit...'
-                            sh '''
+                            sh '''#!/bin/bash
 set -o pipefail
 npm audit --audit-level=high 2>&1 | tee audit-report.txt
 '''
