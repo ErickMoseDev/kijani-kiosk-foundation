@@ -32,7 +32,10 @@ pipeline {
                     }
                     echo "App directory: ${env.APP_DIR}"
 
-                    env.PKG_VERSION      = sh(script: "node -p \"require('./${env.APP_DIR}/package.json').version\"", returnStdout: true).trim()
+                    env.PKG_VERSION      = sh(
+                        script: 'node -p "require(\"./" + env.APP_DIR + "/package.json\").version"',
+                        returnStdout: true
+                    ).trim()
                     env.GIT_SHORT        = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
                     env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
                     echo "Artifact version: ${env.ARTIFACT_VERSION}"
@@ -118,23 +121,23 @@ pipeline {
                         usernameVariable: 'NEXUS_USER',
                         passwordVariable: 'NEXUS_PASS'
                     )]) {
-                        sh '''
+                        sh """
 set -e
 
-NEXUS_TOKEN=$(echo -n "${NEXUS_USER}:${NEXUS_PASS}" | base64)
-NEXUS_HOST=$(echo "${NEXUS_URL}" | sed 's|https\?://||')
+NEXUS_TOKEN=\$(echo -n "\${NEXUS_USER}:\${NEXUS_PASS}" | base64)
+NEXUS_HOST=\$(echo "\${NEXUS_URL}" | sed 's|https\\?://||')
 
 trap "rm -f .npmrc" EXIT
 
 cat > .npmrc << NPMRC
-registry=${NEXUS_URL}/repository/npm-kijanikiosk/
-//${NEXUS_HOST}/repository/npm-kijanikiosk/:_auth=${NEXUS_TOKEN}
-//${NEXUS_HOST}/repository/npm-kijanikiosk/:always-auth=true
+registry=\${NEXUS_URL}/repository/npm-kijanikiosk/
+//\${NEXUS_HOST}/repository/npm-kijanikiosk/:_auth=\${NEXUS_TOKEN}
+//\${NEXUS_HOST}/repository/npm-kijanikiosk/:always-auth=true
 NPMRC
 
-npm version "${ARTIFACT_VERSION}" --no-git-tag-version
+npm version "\${ARTIFACT_VERSION}" --no-git-tag-version
 npm publish --tag build
-'''
+"""
                     }
                 }
             }
