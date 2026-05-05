@@ -94,7 +94,16 @@ pipeline {
                     steps {
                         dir(env.APP_DIR) {
                             echo 'Running dependency security audit...'
-                            sh 'npm audit --audit-level=high'
+                            sh '''
+set -o pipefail
+npm audit --audit-level=high 2>&1 | tee audit-report.txt
+'''
+                        }
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: '**/audit-report.txt',
+                                             allowEmptyArchive: true
                         }
                     }
                 }
