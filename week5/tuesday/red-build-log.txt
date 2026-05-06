@@ -1,0 +1,239 @@
+Started by GitHub push by ErickMoseDev
+Obtained week5/apis-fetch-lab/Jenkinsfile from git https://github.com/ErickMoseDev/kijani-kiosk-foundation
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/jenkins_home/workspace/my-api
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/ErickMoseDev/kijani-kiosk-foundation
+ > git init /var/jenkins_home/workspace/my-api # timeout=10
+Fetching upstream changes from https://github.com/ErickMoseDev/kijani-kiosk-foundation
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/ErickMoseDev/kijani-kiosk-foundation +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/ErickMoseDev/kijani-kiosk-foundation # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/develop^{commit} # timeout=10
+Checking out Revision ac2153eba82140d73b3b00c561ca82dd5592db55 (refs/remotes/origin/develop)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f ac2153eba82140d73b3b00c561ca82dd5592db55 # timeout=10
+Commit message: "chore: add some comments"
+ > git rev-list --no-walk 12ccf8234dc1c89f25436522f7149318509e7e44 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Tool Install)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Setup)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] script
+[Pipeline] {
+[Pipeline] fileExists
+[Pipeline] fileExists
+[Pipeline] echo
+App directory: week5/apis-fetch-lab
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] echo
+Installing dependencies for apis-and-fetch...
+[Pipeline] sh
++ npm ci
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 452 packages, and audited 453 packages in 3s
+
+59 packages are looking for funding
+  run `npm fund` for details
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[Pipeline] echo
+Building application...
+[Pipeline] sh
++ npm run build
+
+> course-3-module-4-external-apis-and-fetching-lab@1.0.0 build
+> mkdir -p dist && cp index.html styles.css index.js dist/
+
+[Pipeline] echo
+Verifying build output
+[Pipeline] sh
++ set -e
++ test -d dist
++ ls dist
++ wc -l
++ echo Build output: 3 files in dist/ 
+Build output: 3 files in dist/ 
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] tool
+[Pipeline] envVarsForTool
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] echo
+Running test suites for apis-and-fetch
+[Pipeline] sh
++ npm test
+
+> course-3-module-4-external-apis-and-fetching-lab@1.0.0 test
+> jest
+
+  console.log
+    { title: 'Weather Alerts', features: [] }
+
+      at log (index.js:19:12)
+
+  console.log
+    {
+      title: 'Weather Alerts',
+      features: [ { properties: [Object] }, { properties: [Object] } ]
+    }
+
+      at log (index.js:19:12)
+
+  console.log
+    {
+      title: 'Weather Alerts',
+      features: [
+        { properties: [Object] },
+        { properties: [Object] },
+        { properties: [Object] },
+        { properties: [Object] }
+      ]
+    }
+
+      at log (index.js:19:12)
+
+  console.log
+    { title: 'Weather Alerts', features: [] }
+
+      at log (index.js:19:12)
+
+  console.log
+    { title: 'Weather Alerts', features: [ { properties: [Object] } ] }
+
+      at log (index.js:19:12)
+
+FAIL test/index.test.js
+  ✕ deliberate failure - CI pipeline proof (4 ms)
+  Weather Alerts App - Input clearing
+    ✓ calls fetch with the correct state in the URL (153 ms)
+    ✓ displays fetched alert data in the DOM after a successful fetch (127 ms)
+    ✓ clears the input field after clicking fetch (49 ms)
+    ✓ displays an error message when fetch fails (43 ms)
+    ✓ clears the error message after a successful fetch (40 ms)
+
+  ● deliberate failure - CI pipeline proof
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 3
+    Received: 2
+
+    [0m [90m 205 |[39m
+     [90m 206 |[39m test([32m'deliberate failure - CI pipeline proof'[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 207 |[39m 	expect([35m1[39m [33m+[39m [35m1[39m)[33m.[39mtoBe([35m3[39m)[33m;[39m [90m// This will always fail - ci[39m
+     [90m     |[39m 	              [31m[1m^[22m[39m
+     [90m 208 |[39m })[33m;[39m
+     [90m 209 |[39m[0m
+
+      at Object.toBe (test/index.test.js:207:16)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 5 passed, 6 total
+Snapshots:   0 total
+Time:        1.746 s
+Ran all test suites.
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+Stage "Archive" skipped due to earlier failure(s)
+[Pipeline] getContext
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+Build URL: http://localhost:8080/job/my-api/12/
+[Pipeline] junit
+Recording test results
+No test report files were found. Configuration error?
+[Checks API] No suitable checks publisher found.
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+Pipeline FAILED: apis-and-fetch build 12 - check logs
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+ERROR: script returned exit code 1
+Finished: FAILURE

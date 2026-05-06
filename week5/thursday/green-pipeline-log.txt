@@ -1,0 +1,358 @@
+Started by GitHub push by ErickMoseDev
+Obtained week5/apis-fetch-lab/Jenkinsfile from git https://github.com/ErickMoseDev/kijani-kiosk-foundation
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/jenkins_home/workspace/my-api
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/ErickMoseDev/kijani-kiosk-foundation
+ > git init /var/jenkins_home/workspace/my-api # timeout=10
+Fetching upstream changes from https://github.com/ErickMoseDev/kijani-kiosk-foundation
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/ErickMoseDev/kijani-kiosk-foundation +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/ErickMoseDev/kijani-kiosk-foundation # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/develop^{commit} # timeout=10
+Checking out Revision 19af418651f15e0d769039b1fc5a7a6fb8d3e164 (refs/remotes/origin/develop)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 19af418651f15e0d769039b1fc5a7a6fb8d3e164 # timeout=10
+Commit message: "fix: eslint errors"
+ > git rev-list --no-walk 9ebcc2f404c4a731be51844d9351e7b161547db2 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:24
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container c4e403b72e57a5ee3db8363de6907f8e3ff1f6138d4cc209589fe29c2349c5e5
+$ docker run -t -d -u 1000:1000 --network shared-net -w /var/jenkins_home/workspace/my-api --volumes-from c4e403b72e57a5ee3db8363de6907f8e3ff1f6138d4cc209589fe29c2349c5e5 -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:24 cat
+$ docker top 5cc4805ba28f9f1f1b22602dc86814d9c914b19523152bf977c93988c3f8ec68 -eo pid,comm
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 15 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Setup)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] fileExists
+[Pipeline] fileExists
+[Pipeline] echo
+App directory: week5/apis-fetch-lab
+[Pipeline] sh
++ node -e var p=require('./week5/apis-fetch-lab/package.json');process.stdout.write(p.version)
+[Pipeline] sh
++ git rev-parse --short HEAD
+[Pipeline] echo
+Artifact version: 1.0.0-19af418
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] echo
+Running linter for kijanikiosk-payments...
+[Pipeline] sh
++ npm ci --prefer-offline
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 452 packages, and audited 453 packages in 9s
+
+59 packages are looking for funding
+  run `npm fund` for details
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[Pipeline] sh
++ npm run lint
+
+> kijanikiosk-payments@1.0.0 lint
+> eslint .
+
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] echo
+Installing dependencies for kijanikiosk-payments...
+[Pipeline] sh
++ npm ci --prefer-offline
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead for a more spec-conformant and faster implementation
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 452 packages, and audited 453 packages in 4s
+
+59 packages are looking for funding
+  run `npm fund` for details
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+[Pipeline] echo
+Building application...
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payments@1.0.0 build
+> mkdir -p dist && cp index.html styles.css index.js dist/
+
+[Pipeline] echo
+Verifying build output...
+[Pipeline] sh
++ set -e
++ test -d dist
++ ls dist
++ wc -l
++ count=3
++ test 3 -gt 0
++ echo Build output: 3 files in dist/
+Build output: 3 files in dist/
+[Pipeline] stash
+Stashed 3 file(s)
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+[Pipeline] parallel
+[Pipeline] { (Branch: Test)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] unstash
+[Pipeline] echo
+Running dependency security audit...
+[Pipeline] sh
+[Pipeline] echo
+Running test suites for kijanikiosk-payments...
+[Pipeline] sh
++ npm audit --audit-level=high
++ npm test
+
+> kijanikiosk-payments@1.0.0 test
+> jest
+
+# npm audit report
+
+uuid  <14.0.0
+Severity: moderate
+uuid: Missing buffer bounds check in v3/v5/v6 when buf is provided - https://github.com/advisories/GHSA-w5hq-g745-h8pq
+fix available via `npm audit fix --force`
+Will install jest-junit@17.0.0, which is a breaking change
+node_modules/uuid
+  jest-junit  9.0.0 - 16.0.0
+  Depends on vulnerable versions of uuid
+  node_modules/jest-junit
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+  console.log
+    { title: 'Weather Alerts', features: [] }
+
+      at log (index.js:19:12)
+
+  console.log
+    {
+      title: 'Weather Alerts',
+      features: [ { properties: [Object] }, { properties: [Object] } ]
+    }
+
+      at log (index.js:19:12)
+
+  console.log
+    {
+      title: 'Weather Alerts',
+      features: [
+        { properties: [Object] },
+        { properties: [Object] },
+        { properties: [Object] },
+        { properties: [Object] }
+      ]
+    }
+
+      at log (index.js:19:12)
+
+  console.log
+    { title: 'Weather Alerts', features: [] }
+
+      at log (index.js:19:12)
+
+  console.log
+    { title: 'Weather Alerts', features: [ { properties: [Object] } ] }
+
+      at log (index.js:19:12)
+
+PASS test/index.test.js
+  Weather Alerts App - Input clearing
+    ✓ calls fetch with the correct state in the URL (193 ms)
+    ✓ displays fetched alert data in the DOM after a successful fetch (50 ms)
+    ✓ clears the input field after clicking fetch (33 ms)
+    ✓ displays an error message when fetch fails (33 ms)
+    ✓ clears the error message after a successful fetch (34 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        1.597 s
+Ran all test suites.
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] junit
+Recording test results
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] echo
+Archiving build artifact for kijanikiosk-payments build 12...
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] echo
+Artifact archived. Download from http://localhost:8080/job/my-api/12/artifact/
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/my-api/week5/apis-fetch-lab
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $NEXUS_PASS
+[Pipeline] {
+[Pipeline] sh
++ set -e
++ echo -n admin:****
++ base64
++ NEXUS_TOKEN=YWRtaW46****
++ echo http://nexus:8081
++ sed s|https\?://||
++ NEXUS_HOST=nexus:8081
++ trap rm -f .npmrc EXIT
++ cat
++ npm version 1.0.0-19af418 --no-git-tag-version
+npm warn Unknown project config "always-auth" (//nexus:8081/repository/npm-kijanikiosk/:always-auth). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+v1.0.0-19af418
++ npm publish --tag build
+npm warn Unknown project config "always-auth" (//nexus:8081/repository/npm-kijanikiosk/:always-auth). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn gitignore-fallback No .npmignore file found, using .gitignore for file exclusion. Consider creating a .npmignore file to explicitly control published files.
+npm notice
+npm notice package: kijanikiosk-payments@1.0.0-19af418
+npm notice Tarball Contents
+npm notice 5.4kB Jenkinsfile
+npm notice 5.0kB README.md
+npm notice 364B eslint.config.mjs
+npm notice 555B index.html
+npm notice 1.3kB index.js
+npm notice 760B package.json
+npm notice 1.3kB styles.css
+npm notice 5.8kB test/index.test.js
+npm notice Tarball Details
+npm notice name: kijanikiosk-payments
+npm notice version: 1.0.0-19af418
+npm notice filename: kijanikiosk-payments-1.0.0-19af418.tgz
+npm notice package size: 6.7 kB
+npm notice unpacked size: 20.5 kB
+npm notice shasum: e49684471f76b43e1d55ed13a86f107df97beca7
+npm notice integrity: sha512-3pmC1+o7tAavp[...]nL+26mriEUl/w==
+npm notice total files: 8
+npm notice
+npm notice Publishing to http://nexus:8081/repository/npm-kijanikiosk/ with tag build and default access
++ kijanikiosk-payments@1.0.0-19af418
++ rm -f .npmrc
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+Build status changed to SUCCESS - my-api #12
+[Pipeline] echo
+Pipeline succeeded: kijanikiosk-payments 1.0.0-19af418 published to http://nexus:8081
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+$ docker stop --time=1 5cc4805ba28f9f1f1b22602dc86814d9c914b19523152bf977c93988c3f8ec68
+$ docker rm -f --volumes 5cc4805ba28f9f1f1b22602dc86814d9c914b19523152bf977c93988c3f8ec68
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
