@@ -1,0 +1,323 @@
+Started by GitHub push by ErickMoseDev
+Obtained week5/friday/kijanikiosk-payment/Jenkinsfile from git https://github.com/ErickMoseDev/kijani-kiosk-foundation
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/jenkins_home/workspace/kijanikiosk-payments
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+No credentials specified
+Cloning the remote Git repository
+Cloning repository https://github.com/ErickMoseDev/kijani-kiosk-foundation
+ > git init /var/jenkins_home/workspace/kijanikiosk-payments # timeout=10
+Fetching upstream changes from https://github.com/ErickMoseDev/kijani-kiosk-foundation
+ > git --version # timeout=10
+ > git --version # 'git version 2.47.3'
+ > git fetch --tags --force --progress -- https://github.com/ErickMoseDev/kijani-kiosk-foundation +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/ErickMoseDev/kijani-kiosk-foundation # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/develop^{commit} # timeout=10
+Checking out Revision 9dcd0b135b20598e93fc30e7ac15d500cde8293b (refs/remotes/origin/develop)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 9dcd0b135b20598e93fc30e7ac15d500cde8293b # timeout=10
+Commit message: "docs: add a readme file"
+ > git rev-list --no-walk 0f2a3a8cc84f8c0671d37aa8cd37eefd86e56b8a # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] isUnix
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
++ docker inspect -f . node:24
+.
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] withDockerContainer
+Jenkins seems to be running inside container c4e403b72e57a5ee3db8363de6907f8e3ff1f6138d4cc209589fe29c2349c5e5
+$ docker run -t -d -u 1000:1000 --network shared-net -w /var/jenkins_home/workspace/kijanikiosk-payments --volumes-from c4e403b72e57a5ee3db8363de6907f8e3ff1f6138d4cc209589fe29c2349c5e5 -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** -e ******** node:24 cat
+$ docker top f54984241069421b495df0ce518e409567aec9b96f59a8e91221199ed0560c4f -eo pid,comm
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timeout
+Timeout set to expire in 10 min
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Setup)
+[Pipeline] script
+[Pipeline] {
+[Pipeline] fileExists
+[Pipeline] fileExists
+[Pipeline] echo
+App directory: week5/friday/kijanikiosk-payment
+[Pipeline] sh
++ node -e var p=require('./week5/friday/kijanikiosk-payment/package.json');process.stdout.write(p.version)
+[Pipeline] sh
++ git rev-parse --short HEAD
+[Pipeline] echo
+Artifact version: 1.0.0-9dcd0b1
+[Pipeline] }
+[Pipeline] // script
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/kijanikiosk-payments/week5/friday/kijanikiosk-payment
+[Pipeline] {
+[Pipeline] echo
+Running Linter for kijanikiosk-payments...
+[Pipeline] sh
++ npm ci --prefer-offline
+npm warn deprecated supertest@6.3.4: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net
+npm warn deprecated uuid@9.0.1: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+added 439 packages, and audited 440 packages in 8s
+
+73 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[Pipeline] sh
++ npm run lint
+
+> kijanikiosk-payment@1.0.0 lint
+> eslint src/
+
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/kijanikiosk-payments/week5/friday/kijanikiosk-payment
+[Pipeline] {
+[Pipeline] echo
+Installing dependencies for kijanikiosk-payments...
+[Pipeline] sh
++ npm ci --prefer-offline
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated supertest@6.3.4: Please upgrade to supertest v7.1.3+, see release notes at https://github.com/forwardemail/supertest/releases/tag/v7.1.3 - maintenance is supported by Forward Email @ https://forwardemail.net
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+npm warn deprecated uuid@9.0.1: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+
+added 439 packages, and audited 440 packages in 3s
+
+73 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[Pipeline] echo
+Building application...
+[Pipeline] sh
++ npm run build
+
+> kijanikiosk-payment@1.0.0 build
+> rm -rf dist && mkdir -p dist && cp -r src dist/src && cp package.json dist/package.json
+
+[Pipeline] echo
+Verifying build output...
+[Pipeline] sh
++ set -e
++ test -d dist
++ ls dist
++ wc -l
++ count=2
++ test 2 -gt 0
++ echo Build output: 2 files in dist/
+Build output: 2 files in dist/
+[Pipeline] stash
+Stashed 3 file(s)
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Verify)
+[Pipeline] parallel
+[Pipeline] { (Branch: Test)
+[Pipeline] { (Branch: Security Audit)
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] stage
+[Pipeline] { (Security Audit)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/kijanikiosk-payments/week5/friday/kijanikiosk-payment
+[Pipeline] {
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/kijanikiosk-payments/week5/friday/kijanikiosk-payment
+[Pipeline] {
+[Pipeline] unstash
+[Pipeline] echo
+Running dependency security audit...
+[Pipeline] sh
+[Pipeline] echo
+Running test suites for kijanikiosk-payments...
+[Pipeline] sh
++ npm test
+
+> kijanikiosk-payment@1.0.0 test
+> jest --coverage
+
+jest-haste-map: Haste module naming collision: kijanikiosk-payment
+  The following files share their name; please adjust your hasteImpl:
+    * <rootDir>/dist/package.json
+    * <rootDir>/package.json
+
+found 0 vulnerabilities
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] archiveArtifacts
+Archiving artifacts
+PASS test/payment.test.js
+  POST /payments
+    ✓ creates a payment and returns 201 (92 ms)
+    ✓ returns 400 when required fields are missing (9 ms)
+    ✓ returns 400 when amount is not positive (10 ms)
+  GET /payments/:id
+    ✓ returns a payment by id (14 ms)
+    ✓ returns 404 for unknown id (4 ms)
+  POST /payments/:id/capture
+    ✓ captures a pending payment (11 ms)
+    ✓ returns 409 if payment is already captured (18 ms)
+  POST /payments/:id/refund
+    ✓ refunds a captured payment (9 ms)
+    ✓ returns 409 if payment is not captured (5 ms)
+  GET /health
+    ✓ returns ok (4 ms)
+
+----------|---------|----------|---------|---------|-------------------
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------|---------|----------|---------|---------|-------------------
+All files |      95 |    89.47 |     100 |      95 |                   
+ app.js   |      95 |    89.47 |     100 |      95 | 52,69             
+----------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        1.008 s
+Ran all test suites.
+[Pipeline] }
+[Pipeline] // dir
+Post stage
+[Pipeline] junit
+Recording test results
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+No test report files were found. Configuration error?
+None of the test reports contained any result
+[Checks API] No suitable checks publisher found.
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // parallel
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Archive)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/kijanikiosk-payments/week5/friday/kijanikiosk-payment
+[Pipeline] {
+[Pipeline] echo
+Archiving build artifact for kijanikiosk-payments build 8...
+[Pipeline] archiveArtifacts
+Archiving artifacts
+Recording fingerprints
+[Pipeline] echo
+Artifact archived. Download from http://localhost:8080/job/kijanikiosk-payments/8/artifact/
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish)
+[Pipeline] dir
+Running in /var/jenkins_home/workspace/kijanikiosk-payments/week5/friday/kijanikiosk-payment
+[Pipeline] {
+[Pipeline] withCredentials
+Masking supported pattern matches of $NEXUS_PASS
+[Pipeline] {
+[Pipeline] sh
++ set -e
++ echo -n admin:****
++ base64
++ NEXUS_TOKEN=YWRtaW46****
++ echo http://nexus:8081
++ sed s|https\?://||
++ NEXUS_HOST=nexus:8081
++ trap rm -f .npmrc EXIT
++ cat
++ npm version 1.0.0-9dcd0b1 --no-git-tag-version
+npm warn Unknown project config "always-auth" (//nexus:8081/repository/capstone-kijanikiosk/:always-auth). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+v1.0.0-9dcd0b1
++ npm publish --tag build
+npm warn Unknown project config "always-auth" (//nexus:8081/repository/capstone-kijanikiosk/:always-auth). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn gitignore-fallback No .npmignore file found, using .gitignore for file exclusion. Consider creating a .npmignore file to explicitly control published files.
+npm notice
+npm notice package: kijanikiosk-payment@1.0.0-9dcd0b1
+npm notice Tarball Contents
+npm notice 5.8kB Jenkinsfile
+npm notice 1.3kB README.md
+npm notice 24B audit-report.txt
+npm notice 337B eslint.config.mjs
+npm notice 583B package.json
+npm notice 2.1kB src/app.js
+npm notice 173B src/server.js
+npm notice 3.2kB test/payment.test.js
+npm notice Tarball Details
+npm notice name: kijanikiosk-payment
+npm notice version: 1.0.0-9dcd0b1
+npm notice filename: kijanikiosk-payment-1.0.0-9dcd0b1.tgz
+npm notice package size: 4.2 kB
+npm notice unpacked size: 13.5 kB
+npm notice shasum: c47763fb2072fc331572c4800bd07655c34238b5
+npm notice integrity: sha512-rqAZpzFRvtJz3[...]0WVuI6hBPuwVg==
+npm notice total files: 8
+npm notice
+npm notice Publishing to http://nexus:8081/repository/capstone-kijanikiosk/ with tag build and default access
++ kijanikiosk-payment@1.0.0-9dcd0b1
++ rm -f .npmrc
+[Pipeline] }
+[Pipeline] // withCredentials
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is used...
+[WS-CLEANUP] done
+[Pipeline] echo
+Pipeline succeeded: kijanikiosk-payments 1.0.0-9dcd0b1 published to http://nexus:8081
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+$ docker stop --time=1 f54984241069421b495df0ce518e409567aec9b96f59a8e91221199ed0560c4f
+$ docker rm -f --volumes f54984241069421b495df0ce518e409567aec9b96f59a8e91221199ed0560c4f
+[Pipeline] // withDockerContainer
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
