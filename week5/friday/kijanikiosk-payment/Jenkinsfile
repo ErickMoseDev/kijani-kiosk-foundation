@@ -46,13 +46,31 @@ pipeline {
         }
         stage("Lint"){
             steps {
-                echo "Lint stage"
+                dir(env.APP_DIR){
+                    echo "Running Linter for ${APP_NAME}..."
+                    sh 'npm ci --prefer-offline'
+                    sh 'npm run lint'
+                }
             }
         }
 
         stage("Build"){
             steps {
-                echo "Build stage"
+                dir(env.APP_DIR) {
+                    echo "Installing dependencies for ${APP_NAME}..."
+                    sh 'npm ci --prefer-offline'
+                    echo 'Building application...'
+                    sh 'npm run build'
+                    echo 'Verifying build output...'
+                    sh '''
+                    set -e
+                    test -d "${BUILD_DIR}" || { echo "ERROR: build directory not found"; exit 1; }
+                    count=$(ls "${BUILD_DIR}" | wc -l)
+                    test "$count" -gt 0 || { echo "ERROR: build directory is empty"; exit 1; }
+                    echo "Build output: ${count} files in ${BUILD_DIR}/"
+                    '''
+                    stash name: 'build-output', includes: "${BUILD_DIR}/**"
+                }
             }
         }
 
@@ -60,25 +78,78 @@ pipeline {
             parallel {
                 stage("Test"){
                     steps {
-                        echo "Verify stage"
+                        dir(env.APP_DIR) {
+                            unstash 'build-output'
+                            echo "Running test suites for ${APP_NAME}..."
+                            sh 'npm test'
+                        }
+                    }
+                    post {
+                        always {
+                            junit allowEmptyResults: true,
+                                testResults: '**/test-results/*.xml'
+                        }
                     }
                 }
-                stage("Security Audit"){
+                stage('Security Audit') {
                     steps {
-                        echo "Security Audit stage"
+                        dir(env.APP_DIR) {
+                            echo 'Running dependency security audit...'
+                            sh '''#!/bin/bash
+set -o pipefail
+npm audit --audit-level=high 2>&1 | tee audit-report.txt
+'''
+                        }
+                    }
+                    post {
+                        always {
+                            archiveArtifacts artifacts: '**/audit-report.txt',
+                                             allowEmptyArchive: true
+                        }
                     }
                 }
             }
         }
 
-        stage("Archive") {
+        stage('Archive') {
             steps {
-                echo "Archive stage"
+                dir(env.APP_DIR) {
+                    echo "Archiving build artifact for ${APP_NAME} build ${BUILD_NUMBER}..."
+                    archiveArtifacts artifacts: "${BUILD_DIR}/**",
+                                     fingerprint: true,
+                                     onlyIfSuccessful: true
+                    echo "Artifact archived. Download from ${BUILD_URL}artifact/"
+                }
             }
         }
-        stage("Publish") {
+
+        stage('Publish') {
             steps {
-                echo "Publish stage"
+                dir(env.APP_DIR) {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'nexus-credentials',
+                        usernameVariable: 'NEXUS_USER',
+                        passwordVariable: 'NEXUS_PASS'
+                    )]) {
+                        sh """
+set -e
+
+NEXUS_TOKEN=\$(echo -n "\${NEXUS_USER}:\${NEXUS_PASS}" | base64)
+NEXUS_HOST=\$(echo "\${NEXUS_URL}" | sed 's|https\\?://||')
+
+trap "rm -f .npmrc" EXIT
+
+cat > .npmrc << NPMRC
+registry=\${NEXUS_URL}/repository/capstone-kijanikiosk/
+//\${NEXUS_HOST}/repository/capstone-kijanikiosk/:_auth=\${NEXUS_TOKEN}
+//\${NEXUS_HOST}/repository/capstone-kijanikiosk/:always-auth=true
+NPMRC
+
+npm version "\${ARTIFACT_VERSION}" --no-git-tag-version
+npm publish --tag build
+"""
+                    }
+                }
             }
         }
     }
