@@ -1,0 +1,74 @@
+pipeline {
+    agent {
+        docker {
+            image "node:24"
+            args  '--network shared-net'
+        }
+    }
+
+    environment {
+        NODE_ENV  = 'test'
+        BUILD_DIR = 'dist'
+        APP_NAME  = 'kijanikiosk-payments'
+        NEXUS_URL = 'http://nexus:8081'
+    }
+    options {
+        timeout(time:10, unit: 'MINUTES')
+    }
+
+    stages {
+        stage("Setup"){
+            steps {
+                echo "Setup stage"
+            }
+        }
+        stage("Lint"){
+            steps {
+                echo "Lint stage"
+            }
+        }
+
+        stage("Build"){
+            steps {
+                echo "Build stage"
+            }
+        }
+
+        stage("Verify"){
+            parallel {
+                stage("Test"){
+                    steps {
+                        echo "Verify stage"
+                    }
+                }
+                stage("Security Audit"){
+                    steps {
+                        echo "Security Audit stage"
+                    }
+                }
+            }
+        }
+
+        stage("Archive") {
+            steps {
+                echo "Archive stage"
+            }
+        }
+        stage("Publish") {
+            steps {
+                echo "Publish stage"
+            }
+        }
+    }
+    post{
+        success {
+            echo "Pipeline Succeded"
+        }
+        failure {
+            echo "Pipeline Failed"
+        }
+        always {
+            cleanWs()
+        }
+    }
+}
