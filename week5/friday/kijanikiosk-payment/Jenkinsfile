@@ -21,23 +21,26 @@ pipeline {
     stages {
         stage("Setup"){
             steps {
-                if(fileExists('package.json')){
-                    env.APP_DIR = "."
-                }else if (fileExists('week5/friday/kijanikiosk-payment/package.json')){
-                    env.APP_DIR = 'week5/friday/kijanikiosk-payment'
-                }else{
-                    error 'package.json not found in workspace root or week5/friday/kijanikiosk-payment'
+                script {
+
+                    if(fileExists('package.json')){
+                        env.APP_DIR = "."
+                    }else if (fileExists('week5/friday/kijanikiosk-payment/package.json')){
+                        env.APP_DIR = 'week5/friday/kijanikiosk-payment'
+                    }else{
+                        error 'package.json not found in workspace root or week5/friday/kijanikiosk-payment'
+                    }
+
+                    echo "App directory: ${env.APP_DIR}"
+
+                    env.PKG_VERSION      = sh(
+                            script: "node -e \"var p=require('./${env.APP_DIR}/package.json');process.stdout.write(p.version)\"",
+                            returnStdout: true
+                        ).trim()
+                    env.GIT_SHORT        = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
+                    echo "Artifact version: ${env.ARTIFACT_VERSION}"
                 }
-
-                echo "App directory: ${env.APP_DIR}"
-
-                env.PKG_VERSION      = sh(
-                        script: "node -e \"var p=require('./${env.APP_DIR}/package.json');process.stdout.write(p.version)\"",
-                        returnStdout: true
-                    ).trim()
-                env.GIT_SHORT        = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                env.ARTIFACT_VERSION = "${env.PKG_VERSION}-${env.GIT_SHORT}"
-                echo "Artifact version: ${env.ARTIFACT_VERSION}"
 
             }
         }
