@@ -2,9 +2,9 @@
 
 ## Scenario 1: The Overnight Batch Processor
 
-**Selected Strategy: Recreate (in-place replacement)**
+**Selected Strategy: Rolling**
 
-The scenario requires zero customer-visible impact and allows rollback within 24 hours. Both constraints are met by a recreate deployment: the old version is stopped, v2.1.0 is deployed, and if the output is wrong the batch is simply re-run with the old version. The strategy comparison table lists recreate as having zero infrastructure overhead, which matches the minimal budget constraint, and it requires no traffic-splitting or load balancer changes since the VM handles no external traffic.
+The single VM means there is only one instance to update, the no-external-traffic constraint means there is no user-visible downtime during the update, and the 24-hour rollback window makes the slow rollback acceptable.
 
 ## Scenario 2: The User-Facing Authentication Service
 
